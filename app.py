@@ -18,7 +18,7 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Manual input fields
+# Manual input fields (numerical)
 pcod_manual = ["Period Length", "Cycle Length", "Age"]
 pcos_manual = [
     "Age (in Years)",
@@ -27,26 +27,28 @@ pcos_manual = [
     "After how many months do you get your periods?"
 ]
 
-# Label cleanup
+# Helper to format labels
 def clean_label(text):
     return text.lower()
 
-def get_input(features, manual_fields):
+# Input generator
+def get_input(features, manual_fields, key_prefix):
     inputs = {}
     for feat in features:
         label = clean_label(feat)
+        unique_key = f"{key_prefix}_{feat}"
         if feat in manual_fields:
-            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=feat)
+            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=unique_key)
         else:
-            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=feat)
+            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=unique_key)
     return inputs
 
 # Input sections
 st.subheader("🔹 PCOD Input")
-pcod_input = get_input(pcod_features, pcod_manual)
+pcod_input = get_input(pcod_features, pcod_manual, key_prefix="pcod")
 
 st.subheader("🔸 PCOS Input")
-pcos_input = get_input(pcos_features, pcos_manual)
+pcos_input = get_input(pcos_features, pcos_manual, key_prefix="pcos")
 
 # Prediction
 if st.button("🔍 Predict"):
@@ -63,6 +65,7 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
+    # Diagnosis suggestion
     if pcod_prob < 0.3 and pcos_prob < 0.3:
         st.success("✅ You are unlikely to have either PCOD or PCOS.")
     elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
