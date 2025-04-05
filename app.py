@@ -27,26 +27,26 @@ pcos_manual = [
     "After how many months do you get your periods?"
 ]
 
+# Label cleanup
 def clean_label(text):
     return text.lower()
 
-def get_input(features, prefix, manual_fields):
+def get_input(features, manual_fields):
     inputs = {}
     for feat in features:
-        key = f"{prefix}_{feat}"
         label = clean_label(feat)
         if feat in manual_fields:
-            inputs[feat] = st.number_input(f"{prefix} - {label}", min_value=0, step=1, format="%d", key=key)
+            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=feat)
         else:
-            inputs[feat] = st.radio(f"{prefix} - {label}", [0, 1], horizontal=True, key=key)
+            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=feat)
     return inputs
 
 # Input sections
 st.subheader("🔹 PCOD Input")
-pcod_input = get_input(pcod_features, "PCOD", pcod_manual)
+pcod_input = get_input(pcod_features, pcod_manual)
 
 st.subheader("🔸 PCOS Input")
-pcos_input = get_input(pcos_features, "PCOS", pcos_manual)
+pcos_input = get_input(pcos_features, pcos_manual)
 
 # Prediction
 if st.button("🔍 Predict"):
@@ -71,5 +71,6 @@ if st.button("🔍 Predict"):
         st.warning("⚠️ You are more likely to have **PCOS**.")
     else:
         st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
+
 
 
