@@ -9,9 +9,9 @@ pcod_features = pickle.load(open("pcod_features.pkl", "rb"))
 pcos_model = pickle.load(open("pcos_model.pkl", "rb"))
 pcos_features = pickle.load(open("pcos_features.pkl", "rb"))
 
-st.set_page_config(page_title="PCOD / PCOS Predictor", layout="centered")
+st.set_page_config(page_title="PCOD / PCOS Prediction Web", layout="centered")
 
-st.title("🩺 PCOD / PCOS Prediction App")
+st.title("🩺 PCOD / PCOS Prediction Web")
 st.markdown("""
 **Instructions**  
 - For Yes/No questions, use `1` for **Yes** and `0` for **No**.  
@@ -74,6 +74,5 @@ if st.button("🔍 Predict"):
         st.warning("⚠️ You are more likely to have **PCOS**.")
     else:
         st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
-
 
 
