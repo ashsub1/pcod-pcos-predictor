@@ -27,16 +27,18 @@ pcos_manual = [
     "After how many months do you get your periods?"
 ]
 
+def clean_label(text):
+    return text.lower()
+
 def get_input(features, prefix, manual_fields):
     inputs = {}
     for feat in features:
         key = f"{prefix}_{feat}"
+        label = clean_label(feat)
         if feat in manual_fields:
-            # Integer number input
-            inputs[feat] = st.number_input(f"{prefix} - {feat}", min_value=0, step=1, format="%d", key=key)
+            inputs[feat] = st.number_input(f"{prefix} - {label}", min_value=0, step=1, format="%d", key=key)
         else:
-            # Radio for binary inputs
-            inputs[feat] = st.radio(f"{prefix} - {feat}", [0, 1], horizontal=True, key=key)
+            inputs[feat] = st.radio(f"{prefix} - {label}", [0, 1], horizontal=True, key=key)
     return inputs
 
 # Input sections
@@ -61,7 +63,6 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Final comment
     if pcod_prob < 0.3 and pcos_prob < 0.3:
         st.success("✅ You are unlikely to have either PCOD or PCOS.")
     elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
@@ -70,4 +71,5 @@ if st.button("🔍 Predict"):
         st.warning("⚠️ You are more likely to have **PCOS**.")
     else:
         st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
+
 
