@@ -18,9 +18,8 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Manual input fields (integers only)
+# Manual input fields (all integers: Age, Lengths, etc.)
 pcod_manual = ["Period Length", "Cycle Length", "Age"]
-
 pcos_manual = [
     "Age (in Years)",
     "Weight (in Kg)",
@@ -30,23 +29,21 @@ pcos_manual = [
     "Cycle Length"
 ]
 
-# Helper to normalize labels
+# Normalize for comparison
 def clean_label(text):
-    return text.strip().lower()
+    return text.strip().lower().replace(" ", "").replace("(", "").replace(")", "").replace("/", "")
 
-# Input generator function
+# Input generator
 def get_input(features, manual_fields, key_prefix):
     inputs = {}
-    manual_fields_clean = [clean_label(f) for f in manual_fields]
+    manual_clean = [clean_label(f) for f in manual_fields]
 
     for feat in features:
         label = feat
         key = f"{key_prefix}_{feat}"
-        if clean_label(feat) in manual_fields_clean:
-            # Use integer input for manual fields (Age, Lengths, etc.)
+        if clean_label(feat) in manual_clean:
             inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=key)
         else:
-            # Use radio for binary inputs (0 or 1)
             inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=key)
     return inputs
 
@@ -57,7 +54,7 @@ pcod_input = get_input(pcod_features, pcod_manual, key_prefix="pcod")
 st.subheader("🔸 PCOS Input")
 pcos_input = get_input(pcos_features, pcos_manual, key_prefix="pcos")
 
-# Prediction button
+# Predict button
 if st.button("🔍 Predict"):
     df_pcod = pd.DataFrame([pcod_input])
     df_pcos = pd.DataFrame([pcos_input])
