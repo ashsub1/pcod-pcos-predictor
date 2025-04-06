@@ -43,9 +43,10 @@ def get_input(features, manual_fields, key_prefix):
         label = feat
         key = f"{key_prefix}_{feat}"
         if clean_label(feat) in manual_fields_clean:
-            # Use integer input (no decimals)
+            # Use integer input for manual fields (Age, Lengths, etc.)
             inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=key)
         else:
+            # Use radio for binary inputs (0 or 1)
             inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=key)
     return inputs
 
