@@ -18,7 +18,7 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Manual input fields (all integers: Age, Lengths, etc.)
+# List exact manual input fields (must match exactly what's in the feature list)
 pcod_manual = ["Period Length", "Cycle Length", "Age"]
 pcos_manual = [
     "Age (in Years)",
@@ -29,32 +29,27 @@ pcos_manual = [
     "Cycle Length"
 ]
 
-# Normalize for comparison
-def clean_label(text):
-    return text.strip().lower().replace(" ", "").replace("(", "").replace(")", "").replace("/", "")
-
-# Input generator
+# Generate input form
 def get_input(features, manual_fields, key_prefix):
     inputs = {}
-    manual_clean = [clean_label(f) for f in manual_fields]
-
     for feat in features:
-        label = feat
         key = f"{key_prefix}_{feat}"
-        if clean_label(feat) in manual_clean:
-            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=key)
+        if feat in manual_fields:
+            # Integer input (no decimals)
+            inputs[feat] = st.number_input(feat, min_value=0, step=1, format="%d", key=key)
         else:
-            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=key)
+            # Binary input (0/1)
+            inputs[feat] = st.radio(feat, [0, 1], horizontal=True, key=key)
     return inputs
 
 # Input sections
 st.subheader("🔹 PCOD Input")
-pcod_input = get_input(pcod_features, pcod_manual, key_prefix="pcod")
+pcod_input = get_input(pcod_features, pcod_manual, "pcod")
 
 st.subheader("🔸 PCOS Input")
-pcos_input = get_input(pcos_features, pcos_manual, key_prefix="pcos")
+pcos_input = get_input(pcos_features, pcos_manual, "pcos")
 
-# Predict button
+# Prediction
 if st.button("🔍 Predict"):
     df_pcod = pd.DataFrame([pcod_input])
     df_pcos = pd.DataFrame([pcos_input])
@@ -69,7 +64,7 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Diagnosis suggestion
+    # Diagnosis logic
     if pcod_prob < 0.3 and pcos_prob < 0.3:
         st.success("✅ You are unlikely to have either PCOD or PCOS.")
     elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
