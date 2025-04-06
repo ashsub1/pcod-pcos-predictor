@@ -18,12 +18,21 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Keywords for integer-type inputs
+# Keywords for integer inputs
 manual_keywords = ["age", "weight", "height", "length", "months", "period"]
 
-# Check if feature should be integer input
+# Force these to binary even if they contain keyword terms
+force_binary_fields = [
+    "Overweight",
+    "Weight gain or loss",
+    "Irregular or missed periods"
+]
+
+# Check if feature should be integer
 def is_integer_input(feature_name):
     fname = feature_name.lower()
+    if feature_name.strip() in force_binary_fields:
+        return False
     return any(kw in fname for kw in manual_keywords)
 
 # Input generator
