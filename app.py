@@ -18,36 +18,31 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# List exact manual input fields (must match exactly what's in the feature list)
-pcod_manual = ["Period Length", "Cycle Length", "Age"]
-pcos_manual = [
-    "Age (in Years)",
-    "Weight (in Kg)",
-    "Height (in Cm / Feet)",
-    "After how many months do you get your periods?",
-    "Period Length",
-    "Cycle Length"
-]
+# Keywords for integer-type inputs
+manual_keywords = ["age", "weight", "height", "length", "months", "period"]
 
-# Generate input form
-def get_input(features, manual_fields, key_prefix):
+# Check if feature should be integer input
+def is_integer_input(feature_name):
+    fname = feature_name.lower()
+    return any(kw in fname for kw in manual_keywords)
+
+# Input generator
+def get_input(features, key_prefix):
     inputs = {}
     for feat in features:
         key = f"{key_prefix}_{feat}"
-        if feat in manual_fields:
-            # Integer input (no decimals)
+        if is_integer_input(feat):
             inputs[feat] = st.number_input(feat, min_value=0, step=1, format="%d", key=key)
         else:
-            # Binary input (0/1)
             inputs[feat] = st.radio(feat, [0, 1], horizontal=True, key=key)
     return inputs
 
 # Input sections
 st.subheader("🔹 PCOD Input")
-pcod_input = get_input(pcod_features, pcod_manual, "pcod")
+pcod_input = get_input(pcod_features, key_prefix="pcod")
 
 st.subheader("🔸 PCOS Input")
-pcos_input = get_input(pcos_features, pcos_manual, "pcos")
+pcos_input = get_input(pcos_features, key_prefix="pcos")
 
 # Prediction
 if st.button("🔍 Predict"):
@@ -64,7 +59,7 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Diagnosis logic
+    # Suggest diagnosis
     if pcod_prob < 0.3 and pcos_prob < 0.3:
         st.success("✅ You are unlikely to have either PCOD or PCOS.")
     elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
