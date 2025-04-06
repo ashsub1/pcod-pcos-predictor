@@ -18,7 +18,7 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Manual input fields (numerical)
+# Manual input fields (integers only)
 pcod_manual = ["Period Length", "Cycle Length", "Age"]
 
 pcos_manual = [
@@ -43,7 +43,8 @@ def get_input(features, manual_fields, key_prefix):
         label = feat
         key = f"{key_prefix}_{feat}"
         if clean_label(feat) in manual_fields_clean:
-            inputs[feat] = st.number_input(label, min_value=0.0, step=0.1, format="%.2f", key=key)
+            # Use integer input (no decimals)
+            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=key)
         else:
             inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=key)
     return inputs
@@ -79,6 +80,3 @@ if st.button("🔍 Predict"):
         st.warning("⚠️ You are more likely to have **PCOS**.")
     else:
         st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
-
-
-
