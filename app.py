@@ -18,17 +18,17 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Keywords to detect integer fields
+# Keywords to detect integer (number_input) fields
 manual_keywords = ["age", "weight", "height", "length", "months", "period"]
 
-# Forced binary fields
+# Forced binary fields (regardless of keyword detection)
 force_binary_fields = [
     "overweight",
     "weight loss or weight gain",
     "irregular or missed periods"
 ]
 
-# Determine input type
+# Determine whether a feature should be an integer input
 def is_integer_input(feature_name):
     fname = feature_name.lower().strip()
     for fb in force_binary_fields:
@@ -36,7 +36,7 @@ def is_integer_input(feature_name):
             return False
     return any(kw in fname for kw in manual_keywords)
 
-# Input form
+# Input generation function
 def get_input(features, key_prefix):
     inputs = {}
     for feat in features:
@@ -69,7 +69,6 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Risk logic
     st.markdown("### 🏥 Medical Suggestion")
 
     if pcod_prob < 0.3 and pcos_prob < 0.3:
@@ -77,5 +76,4 @@ if st.button("🔍 Predict"):
     elif pcod_prob > 0.7 or pcos_prob > 0.7:
         st.error("🚨 You are likely to have PCOD or PCOS. Please visit a hospital or consult a doctor as soon as possible.")
     elif 0.3 <= pcod_prob <= 0.7 or 0.3 <= pcos_prob <= 0.7:
-        st.warning("🤔 You may or may not have PCOD/PCOS. It's your wish, but consulting a hospital for confirmation is a good idea.")
-
+        st.warning("🤔 The chances of PCOD/PCOS are moderate. It's your choice, but visiting a hospital for confirmation is recommended.")
