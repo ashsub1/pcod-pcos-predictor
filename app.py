@@ -18,27 +18,25 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Keywords to detect integer (number_input) fields
+# Keywords to detect integer fields
 manual_keywords = ["age", "weight", "height", "length", "months", "period"]
 
-# Forced binary fields (regardless of keyword detection)
+# Forced binary fields
 force_binary_fields = [
     "overweight",
     "weight loss or weight gain",
     "irregular or missed periods"
 ]
 
-# Determine whether a feature should be an integer input
+# Determine input type
 def is_integer_input(feature_name):
     fname = feature_name.lower().strip()
-    # If the feature contains any of the forced binary keywords, force binary input
     for fb in force_binary_fields:
         if fb in fname:
             return False
-    # Otherwise, if any manual keyword is found, use integer input
     return any(kw in fname for kw in manual_keywords)
 
-# Input generation function
+# Input form
 def get_input(features, key_prefix):
     inputs = {}
     for feat in features:
@@ -71,12 +69,13 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Diagnosis suggestion based on probabilities
+    # Risk logic
+    st.markdown("### 🏥 Medical Suggestion")
+
     if pcod_prob < 0.3 and pcos_prob < 0.3:
-        st.success("✅ You are unlikely to have either PCOD or PCOS.")
-    elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
-        st.warning("⚠️ You are more likely to have **PCOD**.")
-    elif pcos_prob >= 0.3 and pcos_prob > pcod_prob:
-        st.warning("⚠️ You are more likely to have **PCOS**.")
-    else:
-        st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
+        st.success("✅ You are unlikely to have PCOD or PCOS. No need to visit a hospital.")
+    elif pcod_prob > 0.7 or pcos_prob > 0.7:
+        st.error("🚨 You are likely to have PCOD or PCOS. Please visit a hospital or consult a doctor as soon as possible.")
+    elif 0.3 <= pcod_prob <= 0.7 or 0.3 <= pcos_prob <= 0.7:
+        st.warning("🤔 You may or may not have PCOD/PCOS. It's your wish, but consulting a hospital for confirmation is a good idea.")
+
