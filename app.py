@@ -20,27 +20,32 @@ st.markdown("""
 
 # Manual input fields (numerical)
 pcod_manual = ["Period Length", "Cycle Length", "Age"]
+
 pcos_manual = [
     "Age (in Years)",
     "Weight (in Kg)",
     "Height (in Cm / Feet)",
-    "After how many months do you get your periods?"
+    "After how many months do you get your periods?",
+    "Period Length",
+    "Cycle Length"
 ]
 
-# Helper to format labels
+# Helper to normalize labels
 def clean_label(text):
-    return text.lower()
+    return text.strip().lower()
 
-# Input generator
+# Input generator function
 def get_input(features, manual_fields, key_prefix):
     inputs = {}
+    manual_fields_clean = [clean_label(f) for f in manual_fields]
+
     for feat in features:
-        label = clean_label(feat)
-        unique_key = f"{key_prefix}_{feat}"
-        if feat in manual_fields:
-            inputs[feat] = st.number_input(label, min_value=0, step=1, format="%d", key=unique_key)
+        label = feat
+        key = f"{key_prefix}_{feat}"
+        if clean_label(feat) in manual_fields_clean:
+            inputs[feat] = st.number_input(label, min_value=0.0, step=0.1, format="%.2f", key=key)
         else:
-            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=unique_key)
+            inputs[feat] = st.radio(label, [0, 1], horizontal=True, key=key)
     return inputs
 
 # Input sections
@@ -50,7 +55,7 @@ pcod_input = get_input(pcod_features, pcod_manual, key_prefix="pcod")
 st.subheader("🔸 PCOS Input")
 pcos_input = get_input(pcos_features, pcos_manual, key_prefix="pcos")
 
-# Prediction
+# Prediction button
 if st.button("🔍 Predict"):
     df_pcod = pd.DataFrame([pcod_input])
     df_pcos = pd.DataFrame([pcos_input])
@@ -74,5 +79,6 @@ if st.button("🔍 Predict"):
         st.warning("⚠️ You are more likely to have **PCOS**.")
     else:
         st.warning("⚠️ There is a possibility of both PCOD and PCOS.")
+
 
 
