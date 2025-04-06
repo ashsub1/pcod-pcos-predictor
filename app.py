@@ -77,4 +77,3 @@ if st.button("🔍 Predict"):
         st.error("🚨 You are likely to have PCOD or PCOS. Please visit a hospital or consult a doctor as soon as possible.")
     elif 0.3 <= pcod_prob <= 0.6 or 0.3 <= pcos_prob <= 0.6:
         st.warning("🤔 The chances of PCOD/PCOS are moderate. It's your choice, but visiting a hospital for confirmation is recommended.")
-
