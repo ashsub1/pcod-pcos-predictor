@@ -18,21 +18,24 @@ st.markdown("""
 - Enter values carefully for accurate results.
 """)
 
-# Keywords to detect number inputs
+# Keywords to detect integer (number_input) fields
 manual_keywords = ["age", "weight", "height", "length", "months", "period"]
 
-# Exact fields to always show as binary (radio)
+# Forced binary fields (regardless of keyword detection)
 force_binary_fields = [
-    "Overweight",
-    "Weight Loss or Weight Gain",
-    "Irregular or Missed Periods"
+    "overweight",
+    "weight loss or weight gain",
+    "irregular or missed periods"
 ]
 
-# Determine input type
+# Determine whether a feature should be an integer input
 def is_integer_input(feature_name):
     fname = feature_name.lower().strip()
-    if feature_name.strip() in force_binary_fields:
-        return False
+    # If the feature contains any of the forced binary keywords, force binary input
+    for fb in force_binary_fields:
+        if fb in fname:
+            return False
+    # Otherwise, if any manual keyword is found, use integer input
     return any(kw in fname for kw in manual_keywords)
 
 # Input generation function
@@ -68,7 +71,7 @@ if st.button("🔍 Predict"):
     st.write(f"🔹 **PCOD Prediction**: {'1 (Yes)' if pcod_pred == 1 else '0 (No)'} | Probability: `{pcod_prob:.2f}`")
     st.write(f"🔸 **PCOS Prediction**: {'1 (Yes)' if pcos_pred == 1 else '0 (No)'} | Probability: `{pcos_prob:.2f}`")
 
-    # Result interpretation
+    # Diagnosis suggestion based on probabilities
     if pcod_prob < 0.3 and pcos_prob < 0.3:
         st.success("✅ You are unlikely to have either PCOD or PCOS.")
     elif pcod_prob >= 0.3 and pcod_prob > pcos_prob:
